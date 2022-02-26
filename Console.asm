@@ -7,15 +7,16 @@ include 'win32a.inc'
 section '.data' data readable writeable
 ;=============================================
  
-WindowTitle             db 'GTA3',0;
+WindowTitle             db 'Liberty Unleashed 0.1',0;
 ProcID                  dd ?
 ProcHandle              db ?
 
-LoadGame                db 'Restored a crash at load game', 0
-InitateLibraries        db 'Loading Scripts', 0dh,0ah,0
+
+InitateLibraries        db "Loading Scripts",0dh,0ah,0
+
 
 WaitForProcess          db  "Waiting for Grand Theft Auto III...",0dh,0ah,0
-
+    
 section '.text' code readable executable
 
         start:
@@ -30,19 +31,32 @@ section '.text' code readable executable
            jmp yield
 
         StartHack:
+                mov dword[ProcHandle],eax                      ; Save the handle
+
+                call LoadScripts                                      ; EAX != 0 : Continue with further steps
+
+               ; Test
+               ; push InitateLibraries
+               ; call [printf]
+
+               ; push LoadGame
+               ; call [printf]
+
+
+               ; call yield
+        LoadScripts:
+                invoke  _Load, ProcHandle
                ; Test
                 push InitateLibraries
                 call [printf]
-
-                push LoadGame
-                call [printf]
-
 
                 call yield
 
 section '.idata' import data readable
 
-        library msvcrt, 'MSVCRT.DLL', kernel32,'KERNEL32.DLL', user32,'USER32.DLL'
+        library msvcrt, 'MSVCRT.DLL', kernel32,'KERNEL32.DLL', user32,'USER32.DLL', GTA3,'GTA3.DLL'
+
+        import GTA3, _Load,'LoadGame'
 
         import msvcrt, \
                        printf, 'printf', \
@@ -50,6 +64,11 @@ section '.idata' import data readable
                        getchar, 'getchar',\
                        atoi, 'atoi'
           import       kernel32,\
-                       OpenProcess,'OpenProcess'
+                       OpenProcess,'OpenProcess',\
+                       VirtualAllocEx, "VirtualAllocEx",\
+                       WriteProcessMemory,'WriteProcessMemory'
+
           import       user32,\
-                       FindWindow,'FindWindowA'
+                       FindWindow,'FindWindowA',\
+                       GetWindowThreadProcessId,'GetWindowThreadProcessId'
+
