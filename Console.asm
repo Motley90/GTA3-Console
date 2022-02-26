@@ -21,11 +21,11 @@ section '.text' code readable executable
         start:
                 push WaitForProcess
                 call [printf]
-        inputCall:
+        processfeaturepresent:
                 invoke FindWindow, NULL, WindowTitle ; Find the window title
                 test eax,eax                         ; Test whether a window with that title was found or not
                 jnz StartHack                        ; Don't jump = The window was not found
-                jmp inputCall
+                jmp processfeaturepresent
         yield:
            jmp yield
 
