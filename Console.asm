@@ -7,13 +7,13 @@ include 'win32a.inc'
 section '.data' data readable writeable
 ;=============================================
  
-WindowTitle             db 'GTA3',0;
+WindowTitle             db 'Liberty Unleashed 0.1',0;
 ProcID                  dd ?
 ProcHandle              db ?
 
 
-InitateLibraries        db "Loading Scripts",0dh,0ah,0
-
+InitateLibraries        db "Loading Scripts",10,0
+TestMe        db "Loading Scripts",10,0
 
 WaitForProcess          db  "Waiting for Grand Theft Auto III...",0dh,0ah,0
     
@@ -31,24 +31,14 @@ section '.text' code readable executable
            jmp yield
 
         StartHack:
-                mov dword[ProcHandle],eax                      ; Save the handle
-
-                call LoadScripts                                      ; EAX != 0 : Continue with further steps
-
-               ; Test
-               ; push InitateLibraries
-               ; call [printf]
-
-               ; push LoadGame
-               ; call [printf]
 
 
-               ; call yield
+
+               cinvoke printf, InitateLibraries
+               cinvoke printf, TestMe
         LoadScripts:
-                invoke  _Load, ProcHandle
-               ; Test
-                push InitateLibraries
-                call [printf]
+                invoke  MemTest, [LoadGame], ProcHandle
+                ;invoke  LoadGame, ProcHandle
 
                 call yield
 
@@ -56,7 +46,7 @@ section '.idata' import data readable
 
         library msvcrt, 'MSVCRT.DLL', kernel32,'KERNEL32.DLL', user32,'USER32.DLL', GTA3,'GTA3.DLL'
 
-        import GTA3, _Load,'LoadGame'
+        import GTA3, LoadGame,'LoadGame', MemTest,'MemTest'
 
         import msvcrt, \
                        printf, 'printf', \
@@ -72,3 +62,6 @@ section '.idata' import data readable
                        FindWindow,'FindWindowA',\
                        GetWindowThreadProcessId,'GetWindowThreadProcessId'
 
+section '.edata' export data readable
+
+export 'MessUp.EXE', OutPut,'OutPut'
