@@ -1,3 +1,6 @@
+==============================================================================================
+; GTA 3 Console (C) 2021 Robert
+==============================================================================================
 format PE console
 entry start
 
@@ -12,8 +15,8 @@ ProcID                  dd ?
 ProcHandle              db ?
 
 
-InitateLibraries        db "Loading Scripts",10,0
-TestMe        db "Loading Scripts",10,0
+InitateLibraries        db "[Memory Patches] Loading..",10,0
+LibrariesLoaded         db "[Memory Patches] Loaded Successfully!",10,0
 
 WaitForProcess          db  "Waiting for Grand Theft Auto III...",0dh,0ah,0
     
@@ -25,22 +28,18 @@ section '.text' code readable executable
         processfeaturepresent:
                 invoke FindWindow, NULL, WindowTitle ; Find the window title
                 test eax,eax                         ; Test whether a window with that title was found or not
-                jnz StartHack                        ; Don't jump = The window was not found
+                jnz LoadScripts                      ; Don't jump = The window was not found
                 jmp processfeaturepresent
+
         yield:
-           jmp yield
+        jmp yield
 
-        StartHack:
-
-
-
-               cinvoke printf, InitateLibraries
-               cinvoke printf, TestMe
         LoadScripts:
+                invoke printf, InitateLibraries
                 invoke  MemTest, [LoadGame], ProcHandle
-                ;invoke  LoadGame, ProcHandle
+                invoke printf, LibrariesLoaded
 
-                call yield
+        call yield
 
 section '.idata' import data readable
 
@@ -48,20 +47,7 @@ section '.idata' import data readable
 
         import GTA3, LoadGame,'LoadGame', MemTest,'MemTest'
 
-        import msvcrt, \
-                       printf, 'printf', \
-                       scanf, 'scanf', \
-                       getchar, 'getchar',\
-                       atoi, 'atoi'
-          import       kernel32,\
-                       OpenProcess,'OpenProcess',\
-                       VirtualAllocEx, "VirtualAllocEx",\
-                       WriteProcessMemory,'WriteProcessMemory'
+        import       msvcrt, printf, 'printf'
+        import       kernel32, OpenProcess,'OpenProcess'
+        import       user32, FindWindow,'FindWindowA'
 
-          import       user32,\
-                       FindWindow,'FindWindowA',\
-                       GetWindowThreadProcessId,'GetWindowThreadProcessId'
-
-section '.edata' export data readable
-
-export 'MessUp.EXE', OutPut,'OutPut'
