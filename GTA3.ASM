@@ -1,6 +1,4 @@
 
-; DLL creation example
-
 format PE GUI 4.0 DLL
 entry DllEntryPoint
 
@@ -27,17 +25,28 @@ endp
 
 ; VOID LoadGame(HWND hWnd);
 
-proc LoadGame ProcHandle
+
+
+
+
+proc MemTest func, ProcHandle
+      _test:
        invoke GetWindowThreadProcessId, eax, ProcID   ; Get the ProcessID via the window handle
        invoke OpenProcess, 0x1F0FFF, FALSE, [ProcID]  ; Open the process using PROCESS_ALL_ACCESS (0x1F0FFF) and get a handle
        mov dword[ProcHandle],eax                      ; Save the handle
-       invoke VirtualAllocEx, dword[ProcHandle], 0, LoadGameSize, MEM_COMMIT, PAGE_READWRITE
+       ;invoke VirtualAllocEx, dword[ProcHandle], 0, LoadGameSize, MEM_COMMIT, PAGE_READWRITE
        invoke GetWindowThreadProcessId, eax, ProcID   ; Get the ProcessID via the window handle
        invoke OpenProcess, 0x1F0FFF, FALSE, [ProcID]  ; Open the process using PROCESS_ALL_ACCESS (0x1F0FFF) and get a handle
+       test eax,eax                         ; Test whether a window with that title was found or not
+       ;jnz  LoadGame
+       stdcall [func]
+       jmp _test
 
-       cmp eax, 0                                     ; EAX == 0 : Failed to reserve the memory region
+LoadGame:
        invoke WriteProcessMemory, dword[ProcHandle], dword[LoadGameAddress], LoadGameBytes, LoadGameSize, LoadGameResult
        cmp [LoadGameResult],LoadGameSize                    ; Compare the number of patched bytes with the length of our new bytes
+Message:
+invoke  MessageBox,NULL,testss,NULL,MB_OK  ; remove print to console
        ret
 endp
 
@@ -56,7 +65,7 @@ section '.idata' import data readable writeable
 
 section '.edata' export data readable
 
-  export 'GTA3.DLL', LoadGame,'LoadGame'
+export 'GTA3.DLL', LoadGame,'LoadGame', MemTest,'MemTest'
 
 section '.reloc' fixups data readable discardable
 
