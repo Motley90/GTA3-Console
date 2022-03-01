@@ -10,35 +10,31 @@ include 'win32a.inc'
 section '.data' data readable writeable
 ;=============================================
  
-WindowTitle             db 'GTA3',0;
+WindowTitle             db 'Liberty Unleashed 0.1',0;
 ProcID                  dd ?
 ProcHandle              db ?
 
 
-InitateLibraries        db "[Memory Patches] Loading..",10,0
 LibrariesLoaded         db "[Memory Patches] Loaded Successfully!",10,0
 
 WaitForProcess          db  "Waiting for Grand Theft Auto III...",0dh,0ah,0
     
 section '.text' code readable executable
 
-        start:
-                push WaitForProcess
-                call [printf]
-        processfeaturepresent:
-                invoke FindWindow, NULL, WindowTitle ; Find the window title
-                test eax,eax                         ; Test whether a window with that title was found or not
-                jnz LoadScripts                      ; Don't jump = The window was not found
-                jmp processfeaturepresent
-
-        yield:
+start:
+        push WaitForProcess
+        call [printf]
+processfeaturepresent:
+        invoke FindWindow, NULL, WindowTitle ; Find the window title
+        test eax,eax                         ; Test whether a window with that title was found or not
+        jnz LoadScripts                      ; Don't jump = The window was not found
+        jmp processfeaturepresent
+yield:
         jmp yield
+LoadScripts:
 
-        LoadScripts:
-                invoke printf, InitateLibraries
-                invoke  MemTest, [LoadGame], ProcHandle
-                invoke printf, LibrariesLoaded
-
+        invoke  MemTest, [LoadGame], ProcHandle
+        invoke printf, LibrariesLoaded
         call yield
 
 section '.idata' import data readable
@@ -50,4 +46,3 @@ section '.idata' import data readable
         import       msvcrt, printf, 'printf'
         import       kernel32, OpenProcess,'OpenProcess'
         import       user32, FindWindow,'FindWindowA'
-
