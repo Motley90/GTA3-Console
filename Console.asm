@@ -10,7 +10,7 @@ include 'win32a.inc'
 section '.data' data readable writeable
 ;=============================================
  
-WindowTitle             db 'Liberty Unleashed 0.1',0;
+WindowTitle             db 'GTA3',0;
 ProcID                  dd ?
 ProcHandle              db ?
 
