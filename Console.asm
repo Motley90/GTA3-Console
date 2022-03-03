@@ -15,6 +15,7 @@ ProcID                  dd ?
 ProcHandle              db ?
 
 
+
 LibrariesLoaded         db "[Memory Patches] Loaded Successfully!",10,0
 
 WaitForProcess          db  "Waiting for Grand Theft Auto III...",0dh,0ah,0
@@ -33,7 +34,8 @@ yield:
         jmp yield
 LoadScripts:
 
-        invoke  MemTest, [LoadGame], ProcHandle
+        invoke  MemoryPatch, [LoadGame], ProcHandle
+        invoke  MemoryPatch, [UnlimitedSprint], ProcHandle
         invoke printf, LibrariesLoaded
         call yield
 
@@ -41,7 +43,7 @@ section '.idata' import data readable
 
         library msvcrt, 'MSVCRT.DLL', kernel32,'KERNEL32.DLL', user32,'USER32.DLL', GTA3,'GTA3.DLL'
 
-        import GTA3, LoadGame,'LoadGame', MemTest,'MemTest'
+        import GTA3, LoadGame,'LoadGame', MemTest,'MemoryPatch', UnlimitedSprint, 'UnlimitedSprint'
 
         import       msvcrt, printf, 'printf'
         import       kernel32, OpenProcess,'OpenProcess'
