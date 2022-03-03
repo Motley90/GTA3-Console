@@ -13,6 +13,12 @@ LoadGameBytes      db 0x00, 0x53, 0x8B, 0x5C, 0x24, 0x08, 0xE8, 0xB6, 0xCF, 0xFF
 
 LoadGameSize       =  $ - LoadGameBytes
 LoadGameResult     dd ?
+
+UnlimitedSprintAddress    dd 0x4F138C
+UnlimitedSprintBytes      db 0x90, 0x90, 0x90, 0x90, 0x90, 0x90
+
+UnlimitedSprintSize       =  $ - UnlimitedSprintBytes
+UnlimitedSprintResult     dd ?
 ProcID                  dd ?
 ;=============================================
 
@@ -23,7 +29,7 @@ proc DllEntryPoint hinstDLL,fdwReason,lpvReserved
         ret
 endp
 ; MemTest, the function the patch we wish to use, And the handle
-proc MemTest func, ProcHandle
+proc MemoryPatch func, ProcHandle
      main:
        invoke GetWindowThreadProcessId, eax, ProcID   ; Get the ProcessID via the window handle
        invoke OpenProcess, 0x1F0FFF, FALSE, [ProcID]  ; Open the process using PROCESS_ALL_ACCESS (0x1F0FFF) and get a handle
@@ -34,6 +40,11 @@ proc MemTest func, ProcHandle
       LoadGame:
        invoke WriteProcessMemory, dword[ProcHandle], dword[LoadGameAddress], LoadGameBytes, LoadGameSize, LoadGameResult
        cmp [LoadGameResult],LoadGameSize              ; Compare the number of patched bytes with the length of our new bytes
+       ret
+
+      UnlimitedSprint:
+       invoke WriteProcessMemory, dword[ProcHandle], dword[UnlimitedSprintAddress], UnlimitedSprintBytes, UnlimitedSprintSize, UnlimitedSprintResult
+       cmp [UnlimitedSprintResult],UnlimitedSprintSize              ; Compare the number of patched bytes with the length of our new bytes
        ret
 endp
 
@@ -52,7 +63,7 @@ section '.idata' import data readable writeable
 
 section '.edata' export data readable
 
-export 'GTA3.DLL', LoadGame,'LoadGame', MemTest,'MemTest'
+export 'GTA3.DLL', LoadGame,'LoadGame', MemoryPatch,'MemoryPatch', UnlimitedSprint, 'UnlimitedSprint'
 
 section '.reloc' fixups data readable discardable
 
