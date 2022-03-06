@@ -36,6 +36,7 @@ LoadScripts:
 
         invoke  MemoryPatch, [LoadGame], ProcHandle
         invoke  MemoryPatch, [UnlimitedSprint], ProcHandle
+        invoke  MemoryPatch, [DisablePoliceActions], ProcHandle
         invoke printf, LibrariesLoaded
         call yield
 
@@ -43,7 +44,7 @@ section '.idata' import data readable
 
         library msvcrt, 'MSVCRT.DLL', kernel32,'KERNEL32.DLL', user32,'USER32.DLL', GTA3,'GTA3.DLL'
 
-        import GTA3, LoadGame,'LoadGame', MemTest,'MemoryPatch', UnlimitedSprint, 'UnlimitedSprint'
+        import GTA3, LoadGame,'LoadGame', MemoryPatch,'MemoryPatch', UnlimitedSprint, 'UnlimitedSprint', DisablePoliceActions, 'DisablePoliceActions'
 
         import       msvcrt, printf, 'printf'
         import       kernel32, OpenProcess,'OpenProcess'
