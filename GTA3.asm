@@ -13,12 +13,44 @@ LoadGameBytes      db 0x00, 0x53, 0x8B, 0x5C, 0x24, 0x08, 0xE8, 0xB6, 0xCF, 0xFF
 
 LoadGameSize       =  $ - LoadGameBytes
 LoadGameResult     dd ?
-
+;=============================================
 UnlimitedSprintAddress    dd 0x4F138C
 UnlimitedSprintBytes      db 0x90, 0x90, 0x90, 0x90, 0x90, 0x90
 
 UnlimitedSprintSize       =  $ - UnlimitedSprintBytes
 UnlimitedSprintResult     dd ?
+;=============================================
+WantedActionsAddressOne    dd 0x4ADAA3
+WantedActionsBytesOne      db 0xEB, 0x11
+WantedActionsSizeOne       =  $ - WantedActionsBytesOne
+WantedActionsResultOne     dd ?
+;=============================================
+WantedActionsAddressTwo    dd 0x4ADA86
+WantedActionsBytesTwo      db 0xEB, 0x18
+WantedActionsSizeTwo       =  $ - WantedActionsBytesTwo
+WantedActionsResultTwo     dd ?
+;=============================================
+WantedActionsAddressThree    dd 0x4ADA68
+WantedActionsBytesThree      db 0xEB, 0x17
+WantedActionsSizeThree       =  $ - WantedActionsBytesThree
+WantedActionsResultThree     dd ?
+
+;=============================================
+WantedActionsAddressFour    dd 0x4ADA4A
+WantedActionsBytesFour      db 0xEB, 0x17
+WantedActionsSizeFour       =  $ - WantedActionsBytesFour
+WantedActionsResultFour     dd ?
+;=============================================
+WantedActionsAddressFive    dd 0x4ADA29
+WantedActionsBytesFive      db 0xEB, 0x1A
+WantedActionsSizeFive       =  $ - WantedActionsBytesFive
+WantedActionsResultFive     dd ?
+;=============================================
+WantedActionsAddressSix    dd 0x4ADA0A
+WantedActionsBytesSix      db 0xEB, 0x1A
+WantedActionsSizeSix       =  $ - WantedActionsBytesSix
+WantedActionsResultSix     dd ?
+;=============================================
 ProcID                  dd ?
 ;=============================================
 
@@ -46,6 +78,26 @@ proc MemoryPatch func, ProcHandle
        invoke WriteProcessMemory, dword[ProcHandle], dword[UnlimitedSprintAddress], UnlimitedSprintBytes, UnlimitedSprintSize, UnlimitedSprintResult
        cmp [UnlimitedSprintResult],UnlimitedSprintSize              ; Compare the number of patched bytes with the length of our new bytes
        ret
+
+      DisablePoliceActions:
+       invoke WriteProcessMemory, dword[ProcHandle], dword[WantedActionsAddressOne], WantedActionsBytesOne, WantedActionsSizeOne, WantedActionsResultOne
+       cmp [WantedActionsResultOne],WantedActionsSizeOne              ; Compare the number of patched bytes with the length of our new bytes
+
+       invoke WriteProcessMemory, dword[ProcHandle], dword[WantedActionsAddressTwo], WantedActionsBytesTwo, WantedActionsSizeTwo, WantedActionsResultTwo
+       cmp [WantedActionsResultTwo],WantedActionsSizeTwo              ; Compare the number of patched bytes with the length of our new bytes
+
+       invoke WriteProcessMemory, dword[ProcHandle], dword[WantedActionsAddressThree], WantedActionsBytesThree, WantedActionsSizeThree, WantedActionsResultThree
+       cmp [WantedActionsResultThree],WantedActionsSizeThree              ; Compare the number of patched bytes with the length of our new bytes
+
+       invoke WriteProcessMemory, dword[ProcHandle], dword[WantedActionsAddressFour], WantedActionsBytesFour, WantedActionsSizeFour, WantedActionsResultFour
+       cmp [WantedActionsResultFour],WantedActionsSizeFour              ; Compare the number of patched bytes with the length of our new bytes
+
+       invoke WriteProcessMemory, dword[ProcHandle], dword[WantedActionsAddressFive], WantedActionsBytesFive, WantedActionsSizeFive, WantedActionsResultFive
+       cmp [WantedActionsResultFive],WantedActionsSizeFive              ; Compare the number of patched bytes with the length of our new bytes
+
+       invoke WriteProcessMemory, dword[ProcHandle], dword[WantedActionsAddressSix], WantedActionsBytesSix, WantedActionsSizeSix, WantedActionsResultSix
+       cmp [WantedActionsResultSix],WantedActionsSizeSix              ; Compare the number of patched bytes with the length of our new bytes
+       ret
 endp
 
 section '.idata' import data readable writeable
@@ -63,7 +115,7 @@ section '.idata' import data readable writeable
 
 section '.edata' export data readable
 
-export 'GTA3.DLL', LoadGame,'LoadGame', MemoryPatch,'MemoryPatch', UnlimitedSprint, 'UnlimitedSprint'
+export 'GTA3.DLL', LoadGame,'LoadGame', MemoryPatch,'MemoryPatch', UnlimitedSprint, 'UnlimitedSprint', DisablePoliceActions, 'DisablePoliceActions'
 
 section '.reloc' fixups data readable discardable
 
